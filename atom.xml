@@ -1,12 +1,123 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://lesywix.github.io</id>
-    <title>lesywix</title>
-    <updated>2020-02-21T09:56:51.503Z</updated>
+    <title>Lesywix</title>
+    <updated>2020-02-21T15:59:06.753Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://lesywix.github.io"/>
     <link rel="self" href="https://lesywix.github.io/atom.xml"/>
+    <subtitle>做了点微小的贡献，谢谢大家</subtitle>
     <logo>https://lesywix.github.io/images/avatar.png</logo>
     <icon>https://lesywix.github.io/favicon.ico</icon>
-    <rights>All rights reserved 2020, lesywix</rights>
+    <rights>All rights reserved 2020, Lesywix</rights>
+    <entry>
+        <title type="html"><![CDATA[装饰器执行顺序]]></title>
+        <id>https://lesywix.github.io/post/test/</id>
+        <link href="https://lesywix.github.io/post/test/">
+        </link>
+        <updated>2020-02-21T10:03:01.000Z</updated>
+        <content type="html"><![CDATA[<p>考虑如下代码执行顺序：</p>
+<pre><code class="language-python">def decorator_a(func):
+    print('Get in decorator_a')
+    
+    def inner_a(*args, **kwargs):
+        print('Get in inner_a')
+        return func(*args, **kwargs)
+    return inner_a
+    
+    
+def decorator_b(func):
+    print('Get in decorator_b')
+    
+    def inner_b(*args, **kwargs):
+        print('Get in inner_b')
+        return func(*args, **kwargs)
+    return inner_b
+    
+    
+@decorator_a
+@decorator_b
+def f(x):
+    print('Get in f')
+    return x * 2
+    
+    
+ f(1)
+</code></pre>
+<p>结果为：</p>
+<pre><code>Get in decorator_b
+Get in decorator_a
+Get in inner_a
+Get in inner_b
+Get in f
+</code></pre>
+<p>我们知道，用语法糖的装饰器我们可以将被装饰的函数转换为</p>
+<pre><code class="language-python">def f(x):
+    print('Get in f')
+    return x * 2
+f = decorator_a(decorator_b(f))  # decorator 定义省略
+    
+# 调用 f 函数
+f(1)
+</code></pre>
+<p>因此，当执行到 <code>f = decorator_a(decorator_b(f))</code> 时，先执行了 <code>decorator_b(f)</code> ，输出 <code>Get in decorator_b</code> 并返回 <code>inner_b</code> 函数，然后传递给 <code>decorator_a</code> 作为参数，即 <code>decorator_a(inner_b)</code> ，输出 <code>Get in decorator_a</code> 并返回 <code>inner_a</code> 函数。</p>
+<p>当执行到 <code>f(1)</code> 调用 f 函数时，相当于执行了 <code>decorator_a(decorator_b(f))(1)</code> 。由前面得知 <code>decorator_a(decorator_b(f))</code> 返回了 <code>inner_a</code> 函数，所以 <code>decorator_a(decorator_b(f))(1)</code> 等价于 <code>inner_a(1)</code> ，于是进入到 <code>inner_a</code> 函数输出 <code>Get in inner_a</code> 并执行函数内的 <code>func(*args, **kwargs)</code>，这里 <code>func</code> 即为 <code>decorator_a</code> 的参数：<code>decorator_b(f)</code> ，即 <code>func(*args, **kwargs) -&gt; decorator_b(f)(1) -&gt; inner_b(1)</code>  ，所以类似于前面同样的逻辑，进入到 <code>inner_b</code> 函数输出 <code>Get in inner_b</code> 并执行 <code>func(*args, **kwargs)</code>，这里 <code>func</code> 即为 f 函数，所以最后进入 f 函数，输出 <code>Get in f</code> 。</p>
+<p>前面的逻辑看起来有点绕，我们也可以用栈的思想来理解：在定义装饰器函数的时候，相当于函数入栈，上面的例子就是 <code>f -&gt; decorator_b -&gt; decorator_a</code>；在被调用的地方，相当于函数出栈 <code>decorator_a -&gt; decorator_b -&gt; f</code> 。</p>
+<p>由上面的例子，我们再来思考一下三层嵌套的装饰器（即包含装饰器本身的参数）的输出情况：</p>
+<pre><code class="language-python">def decorator_a(n):
+    print(f'Get in decorator_a, n: {n}')
+    
+    def middle_a(func):
+        print('Get in middle_a')
+    
+        def inner_a(*args, **kwargs):
+            print('Get in inner_a')
+            return func(*args, **kwargs)
+        return inner_a
+    return middle_a
+    
+    
+def decorator_b(n):
+    print(f'Get in decorator_b, n: {n}')
+    
+    def middle_b(func):
+        print('Get in middle_b')
+    
+        def inner_b(*args, **kwargs):
+            print('Get in inner_b')
+            return func(*args, **kwargs)
+        return inner_b
+    return middle_b
+    
+    
+@decorator_a('a')
+@decorator_b('b')
+def f(x):
+    print('Get in f')
+    return x * 2
+    
+    
+f(1)
+</code></pre>
+<p>结果为：</p>
+<pre><code>Get in decorator_a, n: a
+Get in decorator_b, n: b
+Get in middle_b
+Get in middle_a
+Get in inner_a
+Get in inner_b
+Get in f
+</code></pre>
+<p>对于三层嵌套结构，我们同样可以将语法糖形式转换为函数形式。上面的例子可以写为:</p>
+<pre><code class="language-py">def f(x):
+    print('Get in f')
+    return x * 2
+f = decorator_a(n)(decorator_b(n)(f))  # decorator 定义省略
+    
+# 调用 f 函数
+f(1)
+</code></pre>
+<p>与两层嵌套不同的是，三层嵌套在包装时已经调用了最外层，并返回内层函数（先剥开了最外层，并返回剩下的内容，剩下的内容不难发现与二层装饰器相同）。如果我们只看一个装饰器的话，即 <code>f = decorator_a(n)(f)</code> 所以会先调用装饰器，进入装饰器最外层并输出 <code>Get in decorator_a, n: a</code> ，然后返回里面两层结构（后面的分析就与前一个例一样了）</p>
+]]></content>
+    </entry>
 </feed>

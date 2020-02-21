@@ -1,159 +1,250 @@
 <html>
-  <head>
-    <meta charset="utf-8" />
-<meta name="description" content="" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>test | lesywix</title>
-<link rel="shortcut icon" href="https://weixianglin.github.io/favicon.ico?v=1556012481620">
-<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
-<link rel="stylesheet" href="https://weixianglin.github.io/styles/main.css">
+<head>
+    <meta charset="utf-8"/>
+<meta name="description" content=""/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>装饰器执行顺序 | Lesywix</title>
+<link rel="shortcut icon" href="https://lesywix.github.io/favicon.ico?v=1582300742974">
+<link href="https://cdn.bootcss.com/font-awesome/5.11.2/css/all.css" rel="stylesheet">
+<link rel="stylesheet" href="https://lesywix.github.io/styles/main.css">
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+      integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
 
-<script src="https://cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.15.10/highlight.min.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.15.10/languages/dockerfile.min.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.15.10/languages/dart.min.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.15.10/languages/go.min.js"></script>
 <script src="https://cdn.bootcss.com/moment.js/2.23.0/moment.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+        integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
+        crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+        crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+        integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
+        crossorigin="anonymous"></script>
+
+<!-- DEMO JS -->
+<script src="media/scripts/index.js"></script>
 
 
-<script async src="https://www.googletagmanager.com/gtag/js?id=UA-113923115-1"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
 
-  gtag('config', 'UA-113923115-1');
-</script>
-
-  </head>
-  <body>
-    <div class="main">
-      <div class="main-content">
-        <div class="site-header">
-  <a href="https://weixianglin.github.io">
-  <img class="avatar" src="https://weixianglin.github.io/images/avatar.png?v=1556012481620" alt="">
-  </a>
-  <h1 class="site-title">
-    lesywix
-  </h1>
-  <p class="site-description">
-    做了点微小的贡献..
-  </p>
-  <div class="menu-container">
-    
-      
-        <a href="/" class="menu">
-          首页
-        </a>
-      
-    
-      
-        <a href="/archives" class="menu">
-          归档
-        </a>
-      
-    
-      
-        <a href="/tags" class="menu">
-          标签
-        </a>
-      
-    
-      
-        <a href="/post/about" class="menu">
-          关于
-        </a>
-      
-    
-  </div>
-  <div class="social-container">
-    
-      
-        <a href="https://www.github.com/weixianglin" target="_blank">
-          <i class="fab fa-github"></i>
-        </a>
-      
-    
-      
-        <a href="https://twitter.com/lesywix" target="_blank">
-          <i class="fab fa-twitter"></i>
-        </a>
-      
-    
-      
-        <a href="http://weibo.com/wixgo" target="_blank">
-          <i class="fab fa-weibo"></i>
-        </a>
-      
-    
-      
-    
-      
-    
-  </div>
-</div>
-
-      
-        <div class="post-detail">
-          <article class="post">
-            <h2 class="post-title">
-              test
-            </h2>
-            <div class="post-info">
-              <time class="post-time">
-                · 2019-04-16 ·
-              </time>
-              
-            </div>
-            
-              <div class="post-feature-image" style="background-image: url('https://weixianglin.github.io/post-images/test.jpg')">
-              </div>
-            
-            <div class="post-content">
-              <h1 id="haha">haha</h1>
-<h2 id="fdhsjkalhg">fdhsjkalhg</h2>
-<ul>
-<li>dsgag</li>
-<li>fdsag</li>
-</ul>
-<p><code>git status</code></p>
-
-            </div>
-          </article>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+</head>
+<body>
+<div class="main gt-bg-theme-color-first">
+    <nav class="navbar navbar-expand-lg">
+    <div class="navbar-brand">
+        <img class="user-avatar" src="/images/avatar.png" alt="头像">
+        <div class="site-name gt-c-content-color-first">
+            Lesywix
         </div>
+    </div>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <i class="fas fa-bars gt-c-content-color-first" style="font-size: 18px"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="navbar-nav mr-auto" style="text-align: center">
+            
+                <div class="nav-item">
+                    
+                        <a href="/" class="menu gt-a-link">
+                            首页
+                        </a>
+                    
+                </div>
+            
+                <div class="nav-item">
+                    
+                        <a href="/archives" class="menu gt-a-link">
+                            归档
+                        </a>
+                    
+                </div>
+            
+                <div class="nav-item">
+                    
+                        <a href="/tags" class="menu gt-a-link">
+                            标签
+                        </a>
+                    
+                </div>
+            
+                <div class="nav-item">
+                    
+                        <a href="/post/about" class="menu gt-a-link">
+                            关于
+                        </a>
+                    
+                </div>
+            
+        </div>
+    </div>
+</nav>
+    <div class="post-container">
+        <div class="post-detail gt-bg-theme-color-second">
+            <article class="gt-post-content">
+                <h2 class="post-title">
+                    装饰器执行顺序
+                </h2>
+                <div class="post-info">
+                    <time class="post-time gt-c-content-color-first">
+                        · 2020-02-21 ·
+                    </time>
+                    
+                </div>
+                <div class="post-content">
+                    <p>考虑如下代码执行顺序：</p>
+<pre><code class="language-python">def decorator_a(func):
+    print('Get in decorator_a')
     
-        
-
-        
-          
-
-          
-            <link rel="stylesheet" href="https://unpkg.com/disqusjs@1.1/dist/disqusjs.css">
-<script src="https://unpkg.com/disqusjs@1.1/dist/disqus.js"></script>
-
-<div id="disqus_thread"></div>
-
-<script>
-
-var options = {
-  shortname: 'wixpro-info',
-  apikey: 'K6kvOchgeiBC9QatzKNDsOmqQwxbiaIzB4GAYGtqouFYsj2MuKBi1F1ALNGCuCxS',
-}
-if ('') {
-  options.api = ''
-}
-var dsqjs = new DisqusJS(options)
-
-</script>
-
-          
-        
+    def inner_a(*args, **kwargs):
+        print('Get in inner_a')
+        return func(*args, **kwargs)
+    return inner_a
     
-        <div class="site-footer">
-  Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a>
+    
+def decorator_b(func):
+    print('Get in decorator_b')
+    
+    def inner_b(*args, **kwargs):
+        print('Get in inner_b')
+        return func(*args, **kwargs)
+    return inner_b
+    
+    
+@decorator_a
+@decorator_b
+def f(x):
+    print('Get in f')
+    return x * 2
+    
+    
+ f(1)
+</code></pre>
+<p>结果为：</p>
+<pre><code>Get in decorator_b
+Get in decorator_a
+Get in inner_a
+Get in inner_b
+Get in f
+</code></pre>
+<p>我们知道，用语法糖的装饰器我们可以将被装饰的函数转换为</p>
+<pre><code class="language-python">def f(x):
+    print('Get in f')
+    return x * 2
+f = decorator_a(decorator_b(f))  # decorator 定义省略
+    
+# 调用 f 函数
+f(1)
+</code></pre>
+<p>因此，当执行到 <code>f = decorator_a(decorator_b(f))</code> 时，先执行了 <code>decorator_b(f)</code> ，输出 <code>Get in decorator_b</code> 并返回 <code>inner_b</code> 函数，然后传递给 <code>decorator_a</code> 作为参数，即 <code>decorator_a(inner_b)</code> ，输出 <code>Get in decorator_a</code> 并返回 <code>inner_a</code> 函数。</p>
+<p>当执行到 <code>f(1)</code> 调用 f 函数时，相当于执行了 <code>decorator_a(decorator_b(f))(1)</code> 。由前面得知 <code>decorator_a(decorator_b(f))</code> 返回了 <code>inner_a</code> 函数，所以 <code>decorator_a(decorator_b(f))(1)</code> 等价于 <code>inner_a(1)</code> ，于是进入到 <code>inner_a</code> 函数输出 <code>Get in inner_a</code> 并执行函数内的 <code>func(*args, **kwargs)</code>，这里 <code>func</code> 即为 <code>decorator_a</code> 的参数：<code>decorator_b(f)</code> ，即 <code>func(*args, **kwargs) -&gt; decorator_b(f)(1) -&gt; inner_b(1)</code>  ，所以类似于前面同样的逻辑，进入到 <code>inner_b</code> 函数输出 <code>Get in inner_b</code> 并执行 <code>func(*args, **kwargs)</code>，这里 <code>func</code> 即为 f 函数，所以最后进入 f 函数，输出 <code>Get in f</code> 。</p>
+<p>前面的逻辑看起来有点绕，我们也可以用栈的思想来理解：在定义装饰器函数的时候，相当于函数入栈，上面的例子就是 <code>f -&gt; decorator_b -&gt; decorator_a</code>；在被调用的地方，相当于函数出栈 <code>decorator_a -&gt; decorator_b -&gt; f</code> 。</p>
+<p>由上面的例子，我们再来思考一下三层嵌套的装饰器（即包含装饰器本身的参数）的输出情况：</p>
+<pre><code class="language-python">def decorator_a(n):
+    print(f'Get in decorator_a, n: {n}')
+    
+    def middle_a(func):
+        print('Get in middle_a')
+    
+        def inner_a(*args, **kwargs):
+            print('Get in inner_a')
+            return func(*args, **kwargs)
+        return inner_a
+    return middle_a
+    
+    
+def decorator_b(n):
+    print(f'Get in decorator_b, n: {n}')
+    
+    def middle_b(func):
+        print('Get in middle_b')
+    
+        def inner_b(*args, **kwargs):
+            print('Get in inner_b')
+            return func(*args, **kwargs)
+        return inner_b
+    return middle_b
+    
+    
+@decorator_a('a')
+@decorator_b('b')
+def f(x):
+    print('Get in f')
+    return x * 2
+    
+    
+f(1)
+</code></pre>
+<p>结果为：</p>
+<pre><code>Get in decorator_a, n: a
+Get in decorator_b, n: b
+Get in middle_b
+Get in middle_a
+Get in inner_a
+Get in inner_b
+Get in f
+</code></pre>
+<p>对于三层嵌套结构，我们同样可以将语法糖形式转换为函数形式。上面的例子可以写为:</p>
+<pre><code class="language-py">def f(x):
+    print('Get in f')
+    return x * 2
+f = decorator_a(n)(decorator_b(n)(f))  # decorator 定义省略
+    
+# 调用 f 函数
+f(1)
+</code></pre>
+<p>与两层嵌套不同的是，三层嵌套在包装时已经调用了最外层，并返回内层函数（先剥开了最外层，并返回剩下的内容，剩下的内容不难发现与二层装饰器相同）。如果我们只看一个装饰器的话，即 <code>f = decorator_a(n)(f)</code> 所以会先调用装饰器，进入装饰器最外层并输出 <code>Get in decorator_a, n: a</code> ，然后返回里面两层结构（后面的分析就与前一个例一样了）</p>
+
+                </div>
+            </article>
+        </div>
+
+        
+
+        
+
+        <div class="site-footer gt-c-content-color-first">
+    <div class="slogan gt-c-content-color-first">做了点微小的贡献，谢谢大家</div>
+    <div class="social-container">
+        
+            
+                <a href="https://github.com/lesywix" target="_blank">
+                    <i class="fab fa-github gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+                <a href="https://twitter.com/lesywix" target="_blank">
+                    <i class="fab fa-twitter gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+                <a href="https://weibo.com/wixgo" target="_blank">
+                    <i class="fab fa-weibo gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+        
+            
+        
+            
+        
+    </div>
+    ©2020 <a href="https://lesywix.github.io">Lesywix</a>. All rights reserved. | <a href="https://lesywix.github.io/atom.xml" target="_blank">RSS</a>
 </div>
 
 <script>
-  hljs.initHighlightingOnLoad()
+    hljs.initHighlightingOnLoad()
 </script>
 
-      </div>
+
     </div>
-  </body>
+</div>
+</body>
 </html>
