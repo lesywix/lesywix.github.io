@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://lesywix.github.io</id>
     <title>Lesywix</title>
-    <updated>2020-02-22T06:48:30.559Z</updated>
+    <updated>2020-02-23T06:09:34.222Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://lesywix.github.io"/>
     <link rel="self" href="https://lesywix.github.io/atom.xml"/>
@@ -10,6 +10,87 @@
     <logo>https://lesywix.github.io/images/avatar.png</logo>
     <icon>https://lesywix.github.io/favicon.ico</icon>
     <rights>All rights reserved 2020, Lesywix</rights>
+    <entry>
+        <title type="html"><![CDATA[自定义 Django models import 方式]]></title>
+        <id>https://lesywix.github.io/post/zi-ding-yi-django-models-import-fang-shi/</id>
+        <link href="https://lesywix.github.io/post/zi-ding-yi-django-models-import-fang-shi/">
+        </link>
+        <updated>2020-02-23T06:05:24.000Z</updated>
+        <content type="html"><![CDATA[<p>默认的，我们会把 Django models 放到一个使用 startapp 创建的 app 的目录下，然后在 settings 中的 INSTALLED_APPS 写入这个 app，在运行 Django 或者做 migrate 时， Django 就会自动发现该 app 下的 models，并在 showmigrations 中显示。</p>
+<p>但是如果我们需要将原来分散在各个 Apps 中的所有 models 放到同一个 app 的子目录下，例如原来 models 结构可能是 <code>project/account_app/models.py</code>，我们想改成 <code>project/appcore/account/models.py</code> 。这时候 Django 就会发现不了这些 models 了（无法 makemigrations）。如何才能让 Django 发现这些这些 models 呢？</p>
+<p>先来看看 Django 源码中 app 中的属性 (django/apps/config.py)：</p>
+<figure data-type="image" tabindex="1"><img src="https://i.loli.net/2019/04/29/5cc6fd0a11f8b.jpg" alt="https://i.loli.net/2019/04/29/5cc6fd0a11f8b.jpg" loading="lazy"></figure>
+<p>可以看出 all_models 应该就是该 app 中的所有 models，此外我们还可以发现该类中有个 import_models() 方法，可以看出 models_module_name 为 app_name.models，即每个 app 下的 models 文件，已经写死在这儿了。</p>
+<figure data-type="image" tabindex="2"><img src="https://i.loli.net/2019/04/29/5cc6fd0c46761.jpg" alt="https://i.loli.net/2019/04/29/5cc6fd0c46761.jpg" loading="lazy"></figure>
+<p>查看引用了 import_models 的文件（registry.py）</p>
+<figure data-type="image" tabindex="3"><img src="https://i.loli.net/2019/04/29/5cc6fd0e31c22.jpg" alt="https://i.loli.net/2019/04/29/5cc6fd0e31c22.jpg" loading="lazy"></figure>
+<p>传入的 all_models 即 models 中的每个类，然后传给 config.py 初始化 models_module。</p>
+<p>当 model 被 import 的时候， ModelBase.<strong>new</strong> 都会调用 apps.register_model 通过参数 all_models 来创建这个 app 对应的 models。</p>
+<p>所以想要在子目录中引入 models，我们需要改变 models_module 写死的赋值方式。</p>
+<p>比如我们有个 app 叫 appcore，存放所有的 models，目录结构如下：</p>
+<pre><code class="language-bash">    .
+    ├── README.md
+    ├── myproject
+    │   ├── __init__.py
+    │   ├── admin.py
+    │   ├── settings.py
+    │   ├── urls.py
+    │   ├── views
+    │   └── wsgi.py
+    ├── appcore
+    │   ├── __init__.py
+    │   ├── account
+    │   │   ├── __init__.py
+    │   │   ├── api.py
+    │   │   └── models.py
+    │   ├── apps.py
+    │   ├── base
+    │   │   ├── __init__.py
+    │   │   ├── api.py
+    │   │   └── models.py
+    │   ├── comment
+    │   │   ├── __init__.py
+    │   │   └── models.py
+</code></pre>
+<p>可以在 apps.py 中覆盖 import_models 方法</p>
+<pre><code class="language-python">    # apps.py
+    from __future__ import unicode_literals
+    import django
+    from django.apps import AppConfig
+    from importlib import import_module
+    from distutils.version import StrictVersion
+    
+    # sub module
+    SUBAPPS = [
+        'account',
+        'base',
+        'commen'
+    ]
+    
+    class AppCoreConfig(AppConfig):
+        name = 'appcore'
+        # django 1.11 后 all_models 获取方式有变化，因此加个判断
+        if StrictVersion(django.get_version()) &gt;= StrictVersion('1.11'):
+            def import_models(self):
+                self.models = self.apps.all_models[self.label]
+                self._import_models()
+        else:
+            # compatibility for django &lt; 1.11
+            def import_models(self, all_models):
+                self.models = all_models
+                self._import_models()
+        # 添加子目录中的 models
+        def _import_models(self):
+            models_module = None
+            for i in SUBAPPS:
+                models_module_name = '{}.{}.models'.format(self.name, i)
+                models_module = import_module(models_module_name)
+            # 最后重新赋值
+            self.models_module = models_module
+</code></pre>
+<p>然后在 settings 中添加此 app（appcore）， 这样就能被 Django 发现该目录下的所有 models 了。</p>
+]]></content>
+    </entry>
     <entry>
         <title type="html"><![CDATA[装饰器执行顺序]]></title>
         <id>https://lesywix.github.io/post/zhuang-shi-qi-zhi-xing-shun-xu/</id>
