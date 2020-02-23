@@ -1,0 +1,309 @@
+<html>
+<head>
+    <meta charset="utf-8"/>
+<meta name="description" content=""/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+
+<title>[翻译] 使用 Django model 锁处理并发 | Lesywix</title>
+
+<link rel="shortcut icon" href="https://lesywix.github.io/favicon.ico?v=1582464375353">
+<link rel="stylesheet" href="https://lesywix.github.io/styles/main.css">
+<link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/5.11.2/css/all.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://cdnjs.loli.net/ajax/libs/highlight.js/9.18.1/styles/atom-one-dark-reasonable.min.css">
+
+<script src="https://cdnjs.loli.net/ajax/libs/highlight.js/9.18.1/highlight.min.js"></script>
+<script src="https://cdnjs.loli.net/ajax/libs/moment.js/2.9.0/moment.min.js"></script>
+<script src="https://cdnjs.loli.net/ajax/libs/jquery/3.4.1/jquery.slim.min.js"></script>
+<script src="https://cdnjs.loli.net/ajax/libs/popper.js/1.9.9/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.min.js"></script>
+
+<!-- DEMO JS -->
+<script src="media/scripts/index.js"></script>
+
+
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-113923115-1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+
+        function gtag() {
+            dataLayer.push(arguments);
+        }
+
+        gtag('js', new Date());
+        gtag('config', 'UA-113923115-1');
+    </script>
+
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+</head>
+<body>
+<div class="main gt-bg-theme-color-first">
+    <nav class="navbar navbar-expand-lg">
+    <div class="navbar-brand">
+        <img class="user-avatar" src="/images/avatar.png" alt="头像">
+        <div class="site-name gt-c-content-color-first">
+            Lesywix
+        </div>
+    </div>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <i class="fas fa-bars gt-c-content-color-first" style="font-size: 18px"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="navbar-nav mr-auto" style="text-align: center">
+            
+                <div class="nav-item">
+                    
+                        <a href="/" class="menu gt-a-link">
+                            首页
+                        </a>
+                    
+                </div>
+            
+                <div class="nav-item">
+                    
+                        <a href="/archives" class="menu gt-a-link">
+                            归档
+                        </a>
+                    
+                </div>
+            
+                <div class="nav-item">
+                    
+                        <a href="/tags" class="menu gt-a-link">
+                            标签
+                        </a>
+                    
+                </div>
+            
+                <div class="nav-item">
+                    
+                        <a href="/post/about" class="menu gt-a-link">
+                            关于
+                        </a>
+                    
+                </div>
+            
+        </div>
+    </div>
+</nav>
+    <div class="post-container">
+        <div class="post-detail gt-bg-theme-color-second">
+            <article class="gt-post-content">
+                <h2 class="post-title">
+                    [翻译] 使用 Django model 锁处理并发
+                </h2>
+                <div class="post-info">
+                    <time class="post-time gt-c-content-color-first">
+                        · 2020-02-23 ·
+                    </time>
+                    
+                        <a href="https://lesywix.github.io/tag/django/" class="post-tags">
+                            # django
+                        </a>
+                    
+                </div>
+                <div class="post-content">
+                    <h2 id="造成并发问题的原因">** 造成并发问题的原因： **</h2>
+<p>假设我们的 model 定义如下：</p>
+<pre><code class="language-python">    class Account(models.Model):
+        id = models.AutoField(
+            primary_key=True,
+        )
+        user = models.ForeignKey(
+            User,
+        )
+        # 资产
+        balance = models.IntegerField(
+            default=0,
+        )
+</code></pre>
+<p>并且有如下的逻辑操作：</p>
+<pre><code class="language-python">    # 入金
+    def deposit(self, amount):
+        self.balance += amount
+        self.save()
+    # 出金
+    def withdraw(self, amount):
+        if amount &gt; self.balance:
+            raise errors.InsufficientFunds()
+        self.balance -= amount
+        self.save()
+</code></pre>
+<p>如果是串行，上面的逻辑不会出什么问题，但是如果是并行的话，就有问题了：<br>
+假设现在有 user A 和 user B 同时对 balance（初始值为 100） 进行操作</p>
+<ol>
+<li>user A 获取到 Account obj，此时 balance 为 100</li>
+<li>user B 获取到 Account obj，此时 balance 为 100</li>
+<li>user A 进行 deposit(50)，此时 balance 为 100 + 50 = 150</li>
+<li>user B 进行 withdraw(30)，此时 balance 为 100 - 30 = 70</li>
+</ol>
+<p>user A 存入了 50，user B 拿出了30，我们期望的结果是 120，最后结果是 70，所以问题就来了。由于并发的原因，B 进行操作的时候，获取到的 Account obj 与 A 是相同的（在 A 获取到 Account obj 但尚未对其进行操作保存时），所以 A 进行的操作对 B 并没有什么影响。</p>
+<h2 id="解决方法"><strong>解决方法</strong></h2>
+<h3 id="悲观锁"><strong>悲观锁</strong></h3>
+<p>即在请求对资源进行操作的时候，锁住要操作的资源，直到整个操作结束则释放锁。</p>
+<p>在这里推荐用数据库级别的锁，因为数据库能很好地管理锁处理并发，而且低层面的锁不会因为其他进程或者线程的操作受到影响，另外 Django App 可以跑多进程，维护 App 级别的锁工作量非常大且复杂。</p>
+<p>对于 Django 我们可以用 <code>select_for_update()</code> 的方式锁住我们要操作的 obj（对于数据库则是锁住要操作的行） 如：account_obj = Account.objects.select_for_update().get(id=1),这样获取到的 obj 就是有带锁的，其他请求想要对这个资源进行访问需要等待这个 obj 完成才能访问。<br>
+参见文档：<a href="https://docs.djangoproject.com/en/dev/ref/models/querysets/#select-for-update">https://docs.djangoproject.com/en/dev/ref/models/querysets/#select-for-update</a></p>
+<p>这里有几点需要注意：</p>
+<ol>
+<li>需要在原子操作（atomic）中使用 <code>select_for_update()</code> (原子操作结束才释放锁)</li>
+<li>若不需要等待可以带上 <code>nowait=True</code> 的参数，遇到冲突的资源直接 raise DatabaseError</li>
+<li>若同时使用了 <code>select_related</code>，则相关资源也会加上锁</li>
+</ol>
+<p>上锁代码：</p>
+<pre><code class="language-python">    @classmethod
+    def deposit(cls, id, amount):
+       with transaction.atomic():
+           account = (
+               cls.objects
+               .select_for_update()
+               .get(id=id)
+           )
+          
+           account.balance += amount
+           account.save()
+        return account
+    
+    @classmethod
+    def withdraw(cls, id, amount):
+       with transaction.atomic():
+           account = (
+               cls.objects
+               .select_for_update()
+               .get(id=id)
+           )
+          
+           if account.balance &lt; amount:
+               raise errors.InsufficentFunds()
+           account.balance -= amount
+           account.save()
+      
+       return account
+</code></pre>
+<h3 id="乐观锁"><strong>乐观锁</strong></h3>
+<p>即在获取资源的时候并不会对相关资源上锁，而是加上一个字段 version，在入库的时候通过判断 version 保证资源更新不冲突。</p>
+<p>举个例子：<br>
+数据表中有 version 字段，要对某一资源请求的时候，数据需要带上 version，然后用 version 查询数据库，此时若有两个并发请求，获取到的 obj 应该是一样的，然后这两个请求同时修改数据，并将 version 自增 1，在保存的时候，也先查询数据库中存不存在 POST 过来的 version，存在则 save，不存在说明该 version 已经被别人先修改了，version 应该已经增加 1，所以返回修改失败。<br>
+用 Django 表达就是 <code>Model.Object.filter(version=version).update(data=data, version=version + 1)</code><br>
+返回 1 代表 update 了一行，0 代表失败</p>
+<p>这里也有几点需要注意：</p>
+<ol>
+<li>需要添加多一个字段，并增加逻辑判断</li>
+<li>如果有很多并发操作，会造成很多请求失败，因为他会返回操作失败而不是像悲观锁那样会等待请求</li>
+<li>需要注意在程序外对数据进行操作可能会造成冲突，比如在 Django shell 中，若没加上逻辑判断对 model 进行更新</li>
+<li>由于不像悲观锁有 <code>no_wait = False</code> 可以实现冲突等待，所以使用乐观锁可能需要自己实现失败重试机制</li>
+</ol>
+<p>上锁代码：</p>
+<pre><code class="language-python">    def deposit(self, id, amount):
+       updated = Account.objects.filter(
+           id=self.id,
+           version=self.version,
+       ).update(
+           balance=balance + amount,
+           version=self.version + 1,
+       )
+       return updated &gt; 0
+    def withdraw(self, id, amount):       
+       if self.balance &lt; amount:
+           raise errors.InsufficentFunds()
+      
+       updated = Account.objects.filter(
+           id=self.id,
+           version=self.version,
+       ).update(
+           balance=balance - amount,
+           version=self.version + 1,
+       )
+      
+       return updated &gt; 0
+</code></pre>
+<h3 id="什么时候用乐观锁什么时候用悲观锁">什么时候用乐观锁，什么时候用悲观锁</h3>
+<ul>
+<li>如果操作对象有许多并发更新（写操作多），用悲观锁可能更好；操作对象读操作多写操作少，用乐观锁更好</li>
+<li>如果更新发生在程序之外(例如，直接在数据库中或 manage shell 中)，悲观锁更安全</li>
+<li>如果接口被远程应用或操作系统调用并且有副作用，需要请确保它们的操作安全。比如调用是否会花很长时间导致超时？每次调用是否能保证幂等？</li>
+</ul>
+<hr>
+<p>原文出处： <a href="https://medium.com/@hakibenita/how-to-manage-concurrency-in-django-models-b240fed4ee2">https://medium.com/@hakibenita/how-to-manage-concurrency-in-django-models-b240fed4ee2</a></p>
+
+                </div>
+            </article>
+        </div>
+
+        
+            <div class="next-post">
+                <div class="next gt-c-content-color-first">下一篇</div>
+                <a href="https://lesywix.github.io/post/zi-ding-yi-django-models-import-fang-shi/" class="post-title gt-a-link">
+                    自定义 Django models import 方式
+                </a>
+            </div>
+        
+
+        
+            
+
+            
+                <link rel="stylesheet" href="https://unpkg.com/disqusjs@1.1/dist/disqusjs.css">
+<script src="https://unpkg.com/disqusjs@1.1/dist/disqus.js"></script>
+
+<div id="disqus_thread"></div>
+
+<script>
+
+var options = {
+  shortname: 'wixpro-info',
+  apikey: 'u7em96gvv1YfrvBxTa6r7pdWTR1ZTZN7hsQ6sbSbxbTRTmDMqUVnsS4yrIqtWU8F',
+}
+if ('') {
+  options.api = ''
+}
+var dsqjs = new DisqusJS(options)
+
+</script>
+
+            
+        
+
+        <div class="site-footer gt-c-content-color-first">
+    <div class="slogan gt-c-content-color-first">做了点微小的贡献，谢谢大家</div>
+    <div class="social-container">
+        
+            
+                <a href="https://github.com/lesywix" target="_blank">
+                    <i class="fab fa-github gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+                <a href="https://twitter.com/lesywix" target="_blank">
+                    <i class="fab fa-twitter gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+                <a href="https://weibo.com/wixgo" target="_blank">
+                    <i class="fab fa-weibo gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+        
+            
+        
+            
+        
+    </div>
+    ©2020 <a href="https://lesywix.github.io">Lesywix</a>. All rights reserved. | <a href="https://lesywix.github.io/atom.xml" target="_blank">RSS</a>
+</div>
+
+<script>
+    hljs.initHighlightingOnLoad()
+</script>
+
+
+    </div>
+</div>
+</body>
+</html>
