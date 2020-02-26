@@ -6,7 +6,7 @@
 
 <title>[翻译] 使用 Django model 锁处理并发 | Lesywix</title>
 
-<link rel="shortcut icon" href="https://lesywix.github.io/favicon.ico?v=1582464375353">
+<link rel="shortcut icon" href="https://lesywix.github.io/favicon.ico?v=1582464515233">
 <link rel="stylesheet" href="https://lesywix.github.io/styles/main.css">
 <link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/5.11.2/css/all.min.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css">
@@ -105,7 +105,7 @@
                     
                 </div>
                 <div class="post-content">
-                    <h2 id="造成并发问题的原因">** 造成并发问题的原因： **</h2>
+                    <h2 id="造成并发问题的原因"><strong>造成并发问题的原因：</strong></h2>
 <p>假设我们的 model 定义如下：</p>
 <pre><code class="language-python">    class Account(models.Model):
         id = models.AutoField(
