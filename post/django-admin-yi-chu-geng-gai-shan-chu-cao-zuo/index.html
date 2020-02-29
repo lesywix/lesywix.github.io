@@ -4,7 +4,7 @@
 <meta name="description" content=""/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 
-<title>About Me | Lesywix</title>
+<title>Django admin 移除更改删除操作 | Lesywix</title>
 
 <link rel="shortcut icon" href="https://lesywix.github.io/favicon.ico?v=1582989424613">
 <link rel="stylesheet" href="https://lesywix.github.io/styles/main.css">
@@ -92,21 +92,55 @@
         <div class="post-detail gt-bg-theme-color-second">
             <article class="gt-post-content">
                 <h2 class="post-title">
-                    About Me
+                    Django admin 移除更改删除操作
                 </h2>
                 <div class="post-info">
                     <time class="post-time gt-c-content-color-first">
-                        · 2020-02-21 ·
+                        · 2020-02-29 ·
                     </time>
+                    
+                        <a href="https://lesywix.github.io/tag/django/" class="post-tags">
+                            # django
+                        </a>
                     
                 </div>
                 <div class="post-content">
-                    <p>TODO</p>
+                    <h2 id="移除-action"><strong>移除 action</strong></h2>
+<p>在你的 ModelAdmin 中添加 <code>action = None</code></p>
+<hr>
+<h2 id="移除添加按钮"><strong>移除添加按钮</strong></h2>
+<p>在你的 ModelAdmin 中添加</p>
+<pre><code>def has_add_permission(self, request):    
+		return False
+</code></pre>
+<hr>
+<h2 id="移除删除按钮"><strong>移除删除按钮</strong></h2>
+<p>在你的 ModelAdmin 中添加</p>
+<pre><code>def has_delete_permission(self, request, obj=None):
+  return False
+</code></pre>
+<hr>
+<h2 id="移除-savesave-and-continue-editing"><strong>移除 save，save and continue editing</strong></h2>
+<p>在你的 ModelAdmin 中添加</p>
+<pre><code># hidden save button
+READONLY_EXTRA_CONTEXT = {
+    'show_save': False,
+    'show_save_and_continue': False,
+}​
+def change_view(self, request, object_id, form_url='',extra_context=READONLY_EXTRA_CONTEXT):
+  return super(CorrespondentConfigAdmin,self).change_view(request, object_id, form_url,extra_context=extra_context)</code></pre>
 
                 </div>
             </article>
         </div>
 
+        
+            <div class="next-post">
+                <div class="next gt-c-content-color-first">下一篇</div>
+                <a href="https://lesywix.github.io/post/fan-yi-shi-yong-django-model-suo-chu-li-bing-fa/" class="post-title gt-a-link">
+                    [翻译] 使用 Django model 锁处理并发
+                </a>
+            </div>
         
 
         
