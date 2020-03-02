@@ -1,0 +1,237 @@
+<html>
+<head>
+    <meta charset="utf-8"/>
+<meta name="description" content=""/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+
+<title>Git 重写历史 | Lesywix</title>
+
+<link rel="shortcut icon" href="https://lesywix.github.io/favicon.ico?v=1583167487524">
+<link rel="stylesheet" href="https://lesywix.github.io/styles/main.css">
+<link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/5.11.2/css/all.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://cdnjs.loli.net/ajax/libs/highlight.js/9.18.1/styles/atom-one-dark-reasonable.min.css">
+
+<script src="https://cdnjs.loli.net/ajax/libs/highlight.js/9.18.1/highlight.min.js"></script>
+<script src="https://cdnjs.loli.net/ajax/libs/moment.js/2.9.0/moment.min.js"></script>
+<script src="https://cdnjs.loli.net/ajax/libs/jquery/3.4.1/jquery.slim.min.js"></script>
+<script src="https://cdnjs.loli.net/ajax/libs/popper.js/1.9.9/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.min.js"></script>
+
+<!-- DEMO JS -->
+<script src="media/scripts/index.js"></script>
+
+
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-113923115-1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+
+        function gtag() {
+            dataLayer.push(arguments);
+        }
+
+        gtag('js', new Date());
+        gtag('config', 'UA-113923115-1');
+    </script>
+
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+</head>
+<body>
+<div class="main gt-bg-theme-color-first">
+    <nav class="navbar navbar-expand-lg">
+    <div class="navbar-brand">
+        <img class="user-avatar" src="/images/avatar.png" alt="头像">
+        <div class="site-name gt-c-content-color-first">
+            Lesywix
+        </div>
+    </div>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <i class="fas fa-bars gt-c-content-color-first" style="font-size: 18px"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="navbar-nav mr-auto" style="text-align: center">
+            
+                <div class="nav-item">
+                    
+                        <a href="/" class="menu gt-a-link">
+                            首页
+                        </a>
+                    
+                </div>
+            
+                <div class="nav-item">
+                    
+                        <a href="/archives" class="menu gt-a-link">
+                            归档
+                        </a>
+                    
+                </div>
+            
+                <div class="nav-item">
+                    
+                        <a href="/tags" class="menu gt-a-link">
+                            标签
+                        </a>
+                    
+                </div>
+            
+                <div class="nav-item">
+                    
+                        <a href="/post/about" class="menu gt-a-link">
+                            关于
+                        </a>
+                    
+                </div>
+            
+        </div>
+    </div>
+</nav>
+    <div class="post-container">
+        <div class="post-detail gt-bg-theme-color-second">
+            <article class="gt-post-content">
+                <h2 class="post-title">
+                    Git 重写历史
+                </h2>
+                <div class="post-info">
+                    <time class="post-time gt-c-content-color-first">
+                        · 2020-03-03 ·
+                    </time>
+                    
+                        <a href="https://lesywix.github.io/tag/git/" class="post-tags">
+                            # git
+                        </a>
+                    
+                </div>
+                <div class="post-content">
+                    <h2 id="修改最后一次提交"><strong>修改最后一次提交</strong></h2>
+<p>有的时候你可能会想修改<strong>上一次</strong>提交的信息，或者添加删除某些忘记的文件，那么在<code>git add</code>（若有文件变更）将待更改的文件加入后可以简单的执行：<code>git commit --amend</code><br>
+这时会进入上次 commit 的文本编辑器，包含你上次提交的信息供你修改。你只需要修改为你想要的信息然后保存即可，保存退出后，在 log 中可以发现最近一次提交的信息已经被成功替换，并且 git hash 也已经改变（变基操作）。<br>
+若前一次的 commit 已经 push 到远程仓库，我们怎么修改远程仓库上次的 commit 呢？只需在上一步基础上执行：<code>git push --force</code>，该操作会将本地的提交覆盖远程仓库上一次的 commit。<br>
+<strong>由于这是变基操作，会覆盖历史，确保本地操作后的结果是自己想要的。</strong></p>
+<p><strong>rebase 黄金法则：never use it on public branches. 不要在公共的branch上使用</strong></p>
+<h3 id="example"><strong>Example:</strong></h3>
+<p><code>git log</code>中存在一个 commit ,此时 git 仓库有 file_1.txt 文件，并且有新建的 file_2.txt（假设是我们在上次 commit 中忘记添加的文件）</p>
+<figure data-type="image" tabindex="1"><img src="https://i.loli.net/2019/04/29/5cc6fc5163289.jpg" alt="https://i.loli.net/2019/04/29/5cc6fc5163289.jpg" loading="lazy"></figure>
+<p>这时，我们执行 <code>git commit --amend</code> 进入文本编辑器，将信息更改为如下内容并保存退出：</p>
+<figure data-type="image" tabindex="2"><img src="https://i.loli.net/2019/04/29/5cc6fc5398ed4.jpg" alt="https://i.loli.net/2019/04/29/5cc6fc5398ed4.jpg" loading="lazy"></figure>
+<p>再次执行 <code>git log</code> 发现 git hash 与 commit 都已经发生改变</p>
+<figure data-type="image" tabindex="3"><img src="https://i.loli.net/2019/04/29/5cc6fc55a2f66.jpg" alt="https://i.loli.net/2019/04/29/5cc6fc55a2f66.jpg" loading="lazy"></figure>
+<hr>
+<h2 id="修改多个提交信息"><strong>修改多个提交信息</strong></h2>
+<p>如果我们想修改不止前一次的提交，那么可以通过变基的操作修改一系列的提交：<br>
+命令：<code>git rebase -i</code>进行交互式变基，后面可以接<code>HEAD~X</code>X代表指定修改前X次提交（如 HEAD~3）<br>
+也可以从<code>git log</code>中直接复制想要修改到哪次的 HASH 值。接下来同样会进入文本编辑交互界面，根据提示信息修改相应的 action 后保存即可（后面提供 🌰）。<br>
+一般 action 有如下：</p>
+<pre><code># Commands:
+#  p, pick = use commit（默认 option）
+#  r, reword = use commit, but edit the commit message（即修改 commit 信息）
+#  e, edit = use commit, but stop for amending（修改 commit 信息，并在每条 commit 信息都会停下来，此时可以修改文件再 commit）
+#  s, squash = use commit, but meld into previous commit（合并前一次提交组成新的提交）
+#  f, fixup = like &quot;squash&quot;, but discard this commit's log message（合并 commit，不组成新的提交）
+#  x, exec = run command (the rest of the line) using shell（执行 shell 命令）
+#  d, drop = remove commit（将此条 commit 删除）
+</code></pre>
+<p>需要注意的是在交互列表内的 commit 信息与 git log 中的信息是相反的，因为 git 会重演提交信息，所以旧的 log 会排在前面。</p>
+<h3 id="example-2"><strong>Example:</strong></h3>
+<p><code>git log</code></p>
+<figure data-type="image" tabindex="4"><img src="https://i.loli.net/2019/04/29/5cc6fc58158e2.jpg" alt="https://i.loli.net/2019/04/29/5cc6fc58158e2.jpg" loading="lazy"></figure>
+<p>这里我们想要拆分第一条 commit，合并第二，三条 commit<br>
+于是我们执行 <code>git rebase -i HEAD~3</code> 进入交互界面对前三条 commit 进行修改（注意是倒序）<br>
+第一条 action 改为了 reword，因为后面的 fixup 会来合并，这时我们需要修改第一条的 commit （合并信息）<br>
+第二条 action 改为了 fixup，它会将改动自动合并到前一个 commit<br>
+第三条 action 改为了 edit，这时 rebase 会停下来等待修改完毕并执行 <code>git rebase --continue</code> 来完成，为了将这个 commit <code>Add file_5.txt and file_6.txt</code> 拆为两条信息，我们需要修改本地的文件并重新进行 commit。<br>
+现在我们保存并退出编辑器，继续接下来的操作<br>
+（下图也印证了上面说的 commit 与 git log 信息相反，rebase 的执行是按下图的执行顺序，除了能自动执行，都得进行 rebase --continue 继续下一个 action）</p>
+<figure data-type="image" tabindex="5"><img src="https://i.loli.net/2019/04/29/5cc6fc5b3e55e.jpg" alt="https://i.loli.net/2019/04/29/5cc6fc5b3e55e.jpg" loading="lazy"></figure>
+<p>退出后马上又进入了编辑器，还记得我们前面将第一条 action 改成了 reword 吗？这里提交我们需要修改的 commit（加上了file_4.txt）并保存退出</p>
+<figure data-type="image" tabindex="6"><img src="https://i.loli.net/2019/04/29/5cc6fc5e001eb.jpg" alt="https://i.loli.net/2019/04/29/5cc6fc5e001eb.jpg" loading="lazy"></figure>
+<p>然后我们可以发现 rebase stopped at <code>Add file_5.txt and file_6.txt</code> 即 action 为 edit  commit 并且 git log 中 <code>Add file_3.txt and file_4.txt</code> 已经成功合并</p>
+<figure data-type="image" tabindex="7"><img src="https://i.loli.net/2019/04/29/5cc6fc6162333.jpg" alt="https://i.loli.net/2019/04/29/5cc6fc6162333.jpg" loading="lazy"></figure>
+<p>那么如何拆分 commit 呢？我们就需要修改本地文件重新提交，此时 git log 可以发现暂存区是空的，并已提交到代码仓库，为了测回提交，我们用 <code>git reset HEAD^</code> 回退到上个状态</p>
+<figure data-type="image" tabindex="8"><img src="https://i.loli.net/2020/03/03/GRw6VXJUxcpOPBm.png" alt="image.png" loading="lazy"></figure>
+<p>这时就可以重新进行 commit 提交啦</p>
+<figure data-type="image" tabindex="9"><img src="https://i.loli.net/2020/03/03/hok3q2OIbTCzGLa.png" alt="image.png" loading="lazy"></figure>
+<h2 id="提醒"><strong>提醒</strong></h2>
+<p>git rebase 用时一时爽，但切记黄金法则，在属于自己的分支上进行操作即可，如果在公共分支上进行 rebase，若你的队友本地已经有保存的副本，分支又被你改了，那就要注意人身安全了。</p>
+
+                </div>
+            </article>
+        </div>
+
+        
+            <div class="next-post">
+                <div class="next gt-c-content-color-first">下一篇</div>
+                <a href="https://lesywix.github.io/post/django-admin-yi-chu-geng-gai-shan-chu-cao-zuo/" class="post-title gt-a-link">
+                    Django admin 移除更改删除操作
+                </a>
+            </div>
+        
+
+        
+            
+
+            
+                <link rel="stylesheet" href="https://unpkg.com/disqusjs@1.1/dist/disqusjs.css">
+<script src="https://unpkg.com/disqusjs@1.1/dist/disqus.js"></script>
+
+<div id="disqus_thread"></div>
+
+<script>
+
+var options = {
+  shortname: 'wixpro-info',
+  apikey: 'u7em96gvv1YfrvBxTa6r7pdWTR1ZTZN7hsQ6sbSbxbTRTmDMqUVnsS4yrIqtWU8F',
+}
+if ('') {
+  options.api = ''
+}
+var dsqjs = new DisqusJS(options)
+
+</script>
+
+            
+        
+
+        <div class="site-footer gt-c-content-color-first">
+    <div class="slogan gt-c-content-color-first">做了点微小的贡献，谢谢大家</div>
+    <div class="social-container">
+        
+            
+                <a href="https://github.com/lesywix" target="_blank">
+                    <i class="fab fa-github gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+                <a href="https://twitter.com/lesywix" target="_blank">
+                    <i class="fab fa-twitter gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+                <a href="https://weibo.com/wixgo" target="_blank">
+                    <i class="fab fa-weibo gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+        
+            
+        
+            
+        
+    </div>
+    ©2020 <a href="https://lesywix.github.io">Lesywix</a>. All rights reserved. | <a href="https://lesywix.github.io/atom.xml" target="_blank">RSS</a>
+</div>
+
+<script>
+    hljs.initHighlightingOnLoad()
+</script>
+
+
+    </div>
+</div>
+</body>
+</html>

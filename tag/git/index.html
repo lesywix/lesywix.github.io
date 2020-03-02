@@ -4,7 +4,7 @@
 <meta name="description" content=""/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 
-<title>Django admin 移除更改删除操作 | Lesywix</title>
+<title>git | Lesywix</title>
 
 <link rel="shortcut icon" href="https://lesywix.github.io/favicon.ico?v=1583167487524">
 <link rel="stylesheet" href="https://lesywix.github.io/styles/main.css">
@@ -35,11 +35,11 @@
     </script>
 
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
 </head>
 <body>
 <div class="main gt-bg-theme-color-first">
-    <nav class="navbar navbar-expand-lg">
+    <div class="main-content">
+        <nav class="navbar navbar-expand-lg">
     <div class="navbar-brand">
         <img class="user-avatar" src="/images/avatar.png" alt="头像">
         <div class="site-name gt-c-content-color-first">
@@ -88,85 +88,45 @@
         </div>
     </div>
 </nav>
-    <div class="post-container">
-        <div class="post-detail gt-bg-theme-color-second">
-            <article class="gt-post-content">
-                <h2 class="post-title">
-                    Django admin 移除更改删除操作
-                </h2>
-                <div class="post-info">
-                    <time class="post-time gt-c-content-color-first">
-                        · 2020-02-29 ·
-                    </time>
-                    
-                        <a href="https://lesywix.github.io/tag/django/" class="post-tags">
-                            # django
-                        </a>
-                    
-                </div>
-                <div class="post-content">
-                    <h2 id="移除-action"><strong>移除 action</strong></h2>
-<p>在你的 ModelAdmin 中添加 <code>action = None</code></p>
-<hr>
-<h2 id="移除添加按钮"><strong>移除添加按钮</strong></h2>
-<p>在你的 ModelAdmin 中添加</p>
-<pre><code>def has_add_permission(self, request):    
-		return False
-</code></pre>
-<hr>
-<h2 id="移除删除按钮"><strong>移除删除按钮</strong></h2>
-<p>在你的 ModelAdmin 中添加</p>
-<pre><code>def has_delete_permission(self, request, obj=None):
-  return False
-</code></pre>
-<hr>
-<h2 id="移除-savesave-and-continue-editing"><strong>移除 save，save and continue editing</strong></h2>
-<p>在你的 ModelAdmin 中添加</p>
-<pre><code># hidden save button
-READONLY_EXTRA_CONTEXT = {
-    'show_save': False,
-    'show_save_and_continue': False,
-}​
-def change_view(self, request, object_id, form_url='',extra_context=READONLY_EXTRA_CONTEXT):
-  return super(CorrespondentConfigAdmin,self).change_view(request, object_id, form_url,extra_context=extra_context)</code></pre>
-
-                </div>
-            </article>
+        <div class="current-tag-container">
+            <h2 class="title gt-c-content-color-first">
+                #git
+            </h2>
         </div>
-
+        <div class="post-list-container">
+    <div class="post-inner">
         
-            <div class="next-post">
-                <div class="next gt-c-content-color-first">下一篇</div>
-                <a href="https://lesywix.github.io/post/fan-yi-shi-yong-django-model-suo-chu-li-bing-fa/" class="post-title gt-a-link">
-                    [翻译] 使用 Django model 锁处理并发
-                </a>
+            <div class="post gt-bg-theme-color-second">
+                <div class="post-left">
+                    <div>
+                        
+                        <a href="https://lesywix.github.io/post/git-chong-xie-li-shi/">
+                            <span class="post-title gt-c-content-color-first">Git 重写历史</span>
+                        </a>
+                    </div>
+                    <div class="gt-post-content post-abstract gt-c-content-color-second">
+                        
+                    </div>
+                    <div class="post-info">
+                        <time class="post-time gt-c-content-color-first">
+                            发布于 · 2020-03-03 ·
+                        </time>
+                        
+                            <a href="https://lesywix.github.io/tag/git/" class="post-tag">
+                                # git
+                            </a>
+                        
+                    </div>
+                </div>
+                
             </div>
         
-
-        
-            
-
-            
-                <link rel="stylesheet" href="https://unpkg.com/disqusjs@1.1/dist/disqusjs.css">
-<script src="https://unpkg.com/disqusjs@1.1/dist/disqus.js"></script>
-
-<div id="disqus_thread"></div>
-
-<script>
-
-var options = {
-  shortname: 'wixpro-info',
-  apikey: 'u7em96gvv1YfrvBxTa6r7pdWTR1ZTZN7hsQ6sbSbxbTRTmDMqUVnsS4yrIqtWU8F',
-}
-if ('') {
-  options.api = ''
-}
-var dsqjs = new DisqusJS(options)
-
-</script>
-
-            
-        
+    </div>
+</div>
+        <div class="pagination-container">
+    
+    
+</div>
 
         <div class="site-footer gt-c-content-color-first">
     <div class="slogan gt-c-content-color-first">做了点微小的贡献，谢谢大家</div>
@@ -203,7 +163,6 @@ var dsqjs = new DisqusJS(options)
 <script>
     hljs.initHighlightingOnLoad()
 </script>
-
 
     </div>
 </div>
