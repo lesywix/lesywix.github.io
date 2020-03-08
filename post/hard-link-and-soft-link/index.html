@@ -4,7 +4,7 @@
 <meta name="description" content=""/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 
-<title>django | Lesywix</title>
+<title>Hard link &amp; Soft link | Lesywix</title>
 
 <link rel="shortcut icon" href="https://lesywix.github.io/favicon.ico?v=1583677166795">
 <link rel="stylesheet" href="https://lesywix.github.io/styles/main.css">
@@ -35,11 +35,11 @@
     </script>
 
 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
 </head>
 <body>
 <div class="main gt-bg-theme-color-first">
-    <div class="main-content">
-        <nav class="navbar navbar-expand-lg">
+    <nav class="navbar navbar-expand-lg">
     <div class="navbar-brand">
         <img class="user-avatar" src="/images/avatar.png" alt="头像">
         <div class="site-name gt-c-content-color-first">
@@ -88,95 +88,112 @@
         </div>
     </div>
 </nav>
-        <div class="current-tag-container">
-            <h2 class="title gt-c-content-color-first">
-                #django
-            </h2>
+    <div class="post-container">
+        <div class="post-detail gt-bg-theme-color-second">
+            <article class="gt-post-content">
+                <h2 class="post-title">
+                    Hard link &amp; Soft link
+                </h2>
+                <div class="post-info">
+                    <time class="post-time gt-c-content-color-first">
+                        · 2020-03-08 ·
+                    </time>
+                    
+                        <a href="https://lesywix.github.io/tag/system/" class="post-tags">
+                            # system
+                        </a>
+                    
+                </div>
+                <div class="post-content">
+                    <h2 id="overview"><strong>overview</strong></h2>
+<p>文件系统由两部分组成：</p>
+<ul>
+<li>
+<p>数据块：存储文件的内容</p>
+</li>
+<li>
+<p>索引节点：存储文件的信息</p>
+<figure data-type="image" tabindex="1"><img src="https://i.loli.net/2019/04/29/5cc6fc85612e7.jpg" alt="https://i.loli.net/2019/04/29/5cc6fc85612e7.jpg" loading="lazy"></figure>
+</li>
+</ul>
+<h2 id="soft-link"><strong>soft link</strong></h2>
+<p>是两个文件的链接，只是一个 shortcut（如 Windows 的快捷方式）</p>
+<ul>
+<li>
+<p>如果删除软链，并不会影响到实际的文件，但是删除实际的文件，软链将会失效</p>
+</li>
+<li>
+<p>软链可以跨越不同文件系统（主机），只要不同主机中相应的资源存在</p>
+</li>
+<li>
+<p>软链可以链接文件或者文件夹</p>
+</li>
+<li>
+<p>软链的文件系统标识是 <code>l</code>，表示这是个软链，例如在 Linux 下使用 <code>ll</code> 的命令，可以看到软链为 <code>lrwxr-xr-x 1 user staff 13B Mar 6 15:51 softlink -&gt; test/softlink</code></p>
+<p>创建软链的方法： <code>ln -s &lt;source&gt; &lt;linkname&gt;</code></p>
+</li>
+</ul>
+<h2 id="hard-link"><strong>hard link</strong></h2>
+<p>硬链是实际文件的副本，硬链和被链接的文件共享一个索引节点</p>
+<ul>
+<li>
+<p>如果原文件被删除，硬链仍然可以访问原文件，直到所有指向原文件的硬链都被删除了</p>
+</li>
+<li>
+<p>硬链不能跨越文件系统，因为他们共享一个索引节点，硬链指向的是硬件的路径而不是目录树</p>
+</li>
+<li>
+<p>硬链只能链接文件而不能链接目录</p>
+</li>
+<li>
+<p>原文件与硬链之间的关系是平等的</p>
+</li>
+<li>
+<p>使用硬链可以方便实现 <code>copy on write</code> 的场景，他能保存文件的副本</p>
+</li>
+<li>
+<p>硬链作为一个普通的文件，所以在文件系统的标识为 <code>-</code></p>
+<p>创建硬链的方法： <code>ln &lt;source&gt; &lt;linkname&gt;</code></p>
+</li>
+</ul>
+
+                </div>
+            </article>
         </div>
-        <div class="post-list-container">
-    <div class="post-inner">
+
         
-            <div class="post gt-bg-theme-color-second">
-                <div class="post-left">
-                    <div>
-                        
-                        <a href="https://lesywix.github.io/post/django-admin-yi-chu-geng-gai-shan-chu-cao-zuo/">
-                            <span class="post-title gt-c-content-color-first">Django admin 移除更改删除操作</span>
-                        </a>
-                    </div>
-                    <div class="gt-post-content post-abstract gt-c-content-color-second">
-                        
-                    </div>
-                    <div class="post-info">
-                        <time class="post-time gt-c-content-color-first">
-                            发布于 · 2020-02-29 ·
-                        </time>
-                        
-                            <a href="https://lesywix.github.io/tag/django/" class="post-tag">
-                                # django
-                            </a>
-                        
-                    </div>
-                </div>
-                
+            <div class="next-post">
+                <div class="next gt-c-content-color-first">下一篇</div>
+                <a href="https://lesywix.github.io/post/git-chong-xie-li-shi/" class="post-title gt-a-link">
+                    Git 重写历史
+                </a>
             </div>
         
-            <div class="post gt-bg-theme-color-second">
-                <div class="post-left">
-                    <div>
-                        
-                        <a href="https://lesywix.github.io/post/fan-yi-shi-yong-django-model-suo-chu-li-bing-fa/">
-                            <span class="post-title gt-c-content-color-first">[翻译] 使用 Django model 锁处理并发</span>
-                        </a>
-                    </div>
-                    <div class="gt-post-content post-abstract gt-c-content-color-second">
-                        
-                    </div>
-                    <div class="post-info">
-                        <time class="post-time gt-c-content-color-first">
-                            发布于 · 2020-02-23 ·
-                        </time>
-                        
-                            <a href="https://lesywix.github.io/tag/django/" class="post-tag">
-                                # django
-                            </a>
-                        
-                    </div>
-                </div>
-                
-            </div>
+
         
-            <div class="post gt-bg-theme-color-second">
-                <div class="post-left">
-                    <div>
-                        
-                        <a href="https://lesywix.github.io/post/zi-ding-yi-django-models-import-fang-shi/">
-                            <span class="post-title gt-c-content-color-first">自定义 Django models import 方式</span>
-                        </a>
-                    </div>
-                    <div class="gt-post-content post-abstract gt-c-content-color-second">
-                        
-                    </div>
-                    <div class="post-info">
-                        <time class="post-time gt-c-content-color-first">
-                            发布于 · 2020-02-23 ·
-                        </time>
-                        
-                            <a href="https://lesywix.github.io/tag/django/" class="post-tag">
-                                # django
-                            </a>
-                        
-                    </div>
-                </div>
-                
-            </div>
+            
+
+            
+                <link rel="stylesheet" href="https://unpkg.com/disqusjs@1.1/dist/disqusjs.css">
+<script src="https://unpkg.com/disqusjs@1.1/dist/disqus.js"></script>
+
+<div id="disqus_thread"></div>
+
+<script>
+
+var options = {
+  shortname: 'wixpro-info',
+  apikey: 'u7em96gvv1YfrvBxTa6r7pdWTR1ZTZN7hsQ6sbSbxbTRTmDMqUVnsS4yrIqtWU8F',
+}
+if ('') {
+  options.api = ''
+}
+var dsqjs = new DisqusJS(options)
+
+</script>
+
+            
         
-    </div>
-</div>
-        <div class="pagination-container">
-    
-    
-</div>
 
         <div class="site-footer gt-c-content-color-first">
     <div class="slogan gt-c-content-color-first">做了点微小的贡献，谢谢大家</div>
@@ -213,6 +230,7 @@
 <script>
     hljs.initHighlightingOnLoad()
 </script>
+
 
     </div>
 </div>

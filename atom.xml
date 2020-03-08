@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://lesywix.github.io</id>
     <title>Lesywix</title>
-    <updated>2020-03-02T16:44:50.159Z</updated>
+    <updated>2020-03-08T14:19:32.455Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://lesywix.github.io"/>
     <link rel="self" href="https://lesywix.github.io/atom.xml"/>
@@ -10,6 +10,65 @@
     <logo>https://lesywix.github.io/images/avatar.png</logo>
     <icon>https://lesywix.github.io/favicon.ico</icon>
     <rights>All rights reserved 2020, Lesywix</rights>
+    <entry>
+        <title type="html"><![CDATA[Hard link & Soft link]]></title>
+        <id>https://lesywix.github.io/post/hard-link-and-soft-link/</id>
+        <link href="https://lesywix.github.io/post/hard-link-and-soft-link/">
+        </link>
+        <updated>2020-03-08T14:18:37.000Z</updated>
+        <content type="html"><![CDATA[<h2 id="overview"><strong>overview</strong></h2>
+<p>文件系统由两部分组成：</p>
+<ul>
+<li>
+<p>数据块：存储文件的内容</p>
+</li>
+<li>
+<p>索引节点：存储文件的信息</p>
+<figure data-type="image" tabindex="1"><img src="https://i.loli.net/2019/04/29/5cc6fc85612e7.jpg" alt="https://i.loli.net/2019/04/29/5cc6fc85612e7.jpg" loading="lazy"></figure>
+</li>
+</ul>
+<h2 id="soft-link"><strong>soft link</strong></h2>
+<p>是两个文件的链接，只是一个 shortcut（如 Windows 的快捷方式）</p>
+<ul>
+<li>
+<p>如果删除软链，并不会影响到实际的文件，但是删除实际的文件，软链将会失效</p>
+</li>
+<li>
+<p>软链可以跨越不同文件系统（主机），只要不同主机中相应的资源存在</p>
+</li>
+<li>
+<p>软链可以链接文件或者文件夹</p>
+</li>
+<li>
+<p>软链的文件系统标识是 <code>l</code>，表示这是个软链，例如在 Linux 下使用 <code>ll</code> 的命令，可以看到软链为 <code>lrwxr-xr-x 1 user staff 13B Mar 6 15:51 softlink -&gt; test/softlink</code></p>
+<p>创建软链的方法： <code>ln -s &lt;source&gt; &lt;linkname&gt;</code></p>
+</li>
+</ul>
+<h2 id="hard-link"><strong>hard link</strong></h2>
+<p>硬链是实际文件的副本，硬链和被链接的文件共享一个索引节点</p>
+<ul>
+<li>
+<p>如果原文件被删除，硬链仍然可以访问原文件，直到所有指向原文件的硬链都被删除了</p>
+</li>
+<li>
+<p>硬链不能跨越文件系统，因为他们共享一个索引节点，硬链指向的是硬件的路径而不是目录树</p>
+</li>
+<li>
+<p>硬链只能链接文件而不能链接目录</p>
+</li>
+<li>
+<p>原文件与硬链之间的关系是平等的</p>
+</li>
+<li>
+<p>使用硬链可以方便实现 <code>copy on write</code> 的场景，他能保存文件的副本</p>
+</li>
+<li>
+<p>硬链作为一个普通的文件，所以在文件系统的标识为 <code>-</code></p>
+<p>创建硬链的方法： <code>ln &lt;source&gt; &lt;linkname&gt;</code></p>
+</li>
+</ul>
+]]></content>
+    </entry>
     <entry>
         <title type="html"><![CDATA[Git 重写历史]]></title>
         <id>https://lesywix.github.io/post/git-chong-xie-li-shi/</id>
